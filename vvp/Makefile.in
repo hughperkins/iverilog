@@ -123,7 +123,6 @@ vvp@EXEEXT@: $O
 
 libvvp.so: $O
 	$(CXX) -shared $(LDFLAGS) -o libvvp.so $O $(LIBS) $(dllib)
-endif
 
 %.o: %.cc config.h
 	$(CXX) $(CPPFLAGS) -DIVL_SUFFIX='"$(suffix)"' $(MDIR1) $(MDIR2) $(CXXFLAGS) @DEPENDENCY_FLAG@ -c $< -o $*.o
