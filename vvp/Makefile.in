@@ -79,7 +79,7 @@ O = main.o parse.o parse_misc.o lexor.o arith.o array_common.o array.o bufif.o c
     vvp_object.o vvp_cobject.o vvp_darray.o event.o logic.o delay.o \
     words.o island_tran.o $(VPI)
 
-all: dep vvp@EXEEXT@ vvp.man
+all: dep vvp@EXEEXT@ vvp.man libvvp.so
 
 check: all
 ifeq (@WIN32@,yes)
