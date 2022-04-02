@@ -53,8 +53,8 @@ else
 INCLUDE_PATH = -I. -I.. -I$(srcdir) -I$(srcdir)/..
 endif
 
-CPPFLAGS = $(INCLUDE_PATH) @CPPFLAGS@ @DEFS@ -DICARUS_VPI_CONST=const
-CFLAGS = @WARNING_FLAGS@ @WARNING_FLAGS_CC@ @CFLAGS@
+CPPFLAGS = $(INCLUDE_PATH) @CPPFLAGS@ @DEFS@ -DICARUS_VPI_CONST=const -fPIC
+CFLAGS = @WARNING_FLAGS@ @WARNING_FLAGS_CC@ @CFLAGS@ -fPIC
 CXXFLAGS = @WARNING_FLAGS@ @WARNING_FLAGS_CXX@ @CXXFLAGS@
 LDFLAGS = @rdynamic@ @LDFLAGS@
 LIBS = @LIBS@ @EXTRALIBS@
@@ -71,7 +71,7 @@ VPI = vpi_modules.o vpi_bit.o vpi_callback.o vpi_cobject.o vpi_const.o vpi_darra
 
 O = main.o parse.o parse_misc.o lexor.o arith.o array_common.o array.o bufif.o compile.o \
     concat.o dff.o class_type.o enum_type.o extend.o file_line.o latch.o npmos.o part.o \
-    permaheap.o reduce.o resolv.o \
+    permaheap.o reduce.o resolv.o lib_entry.o \
     sfunc.o stop.o \
     substitute.o \
     symbols.o ufunc.o codes.o vthread.o schedule.o \
@@ -98,7 +98,7 @@ endif
 
 clean:
 	rm -f *.o *~ parse.cc parse.h lexor.cc tables.cc
-	rm -rf dep vvp@EXEEXT@ parse.output vvp.man vvp.ps vvp.pdf vvp.exp
+	rm -rf dep vvp@EXEEXT@ libvvp.so parse.output vvp.man vvp.ps vvp.pdf vvp.exp
 
 distclean: clean
 	rm -f Makefile config.log
@@ -120,6 +120,10 @@ dep:
 
 vvp@EXEEXT@: $O
 	$(CXX) $(LDFLAGS) -o vvp@EXEEXT@ $O $(LIBS) $(dllib)
+
+libvvp.so: $O
+	$(CXX) -shared $(LDFLAGS) -o libvvp.so $O $(LIBS) $(dllib)
+endif
 
 %.o: %.cc config.h
 	$(CXX) $(CPPFLAGS) -DIVL_SUFFIX='"$(suffix)"' $(MDIR1) $(MDIR2) $(CXXFLAGS) @DEPENDENCY_FLAG@ -c $< -o $*.o
@@ -191,6 +195,7 @@ installpdf: vvp.pdf installdirs
 
 installfiles: $(F) | installdirs
 	$(INSTALL_PROGRAM) ./vvp@EXEEXT@ "$(DESTDIR)$(bindir)/vvp$(suffix)@EXEEXT@"
+	$(INSTALL_PROGRAM) ./libvvp.so "$(DESTDIR)$(libdir)/libvvp.so"
 
 installdirs: $(srcdir)/../mkinstalldirs
 	$(srcdir)/../mkinstalldirs "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)" "$(DESTDIR)$(INSTALL_DOCDIR)"
